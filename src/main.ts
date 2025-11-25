@@ -2,26 +2,27 @@
 // 說明：請為以下變數補上正確型別（數字、字串、布林、字串陣列、帶型別的物件）。
 // 目標：能直接通過型別檢查與基本值檢查。
 
-export const plantId: number /* TODO: 型別 */ = 101;
-export const plantName: string /* TODO: 型別 */ = "琴葉榕（Fiddle Leaf Fig）";
-export const isAvailable: boolean /* TODO: 型別 */ = true;
-export const tags: string[] /* TODO: 型別 */ = ["大型植栽", "室內明亮散射光"];
+export const plantId: number = 101;
+export const plantName: string = "琴葉榕（Fiddle Leaf Fig）";
+export const isAvailable: boolean = true;
+export const tags: string[] = ["大型植栽", "室內明亮散射光"];
 export const plant: {
 	id: number;
 	name: string;
 	price: number;
-} /* TODO: 物件型別 */ = {
+} = {
 	id: 101,
 	name: "琴葉榕",
 	price: 2500,
 };
+
 export const cart: Array<{
 	sku: string;
 	name: string;
 	qty: number;
 	price: number;
 	potColor?: string;
-}> /* TODO: 陣列包物件的型別定義 > */ = [
+}> = [
 	{ sku: "PLANT-1001", name: "虎尾蘭", qty: 2, price: 480 },
 	{ sku: "PLANT-2001", name: "龜背芋", qty: 1, price: 1200, potColor: "白" },
 ];
@@ -36,11 +37,11 @@ export enum PlantCategory {
 	"conifers",
 	"flowering plants",
 }
-export const catKeyName: string =
-	PlantCategory[/* TODO: 取得 LargePlant 的數值 */ 0]; //"mosses"
+export const catKeyName: string = PlantCategory[0]; //"mosses"
 
 export const catKey: number = PlantCategory["mosses"]; //"mosses"
 export const catKeyName2: string = PlantCategory[PlantCategory.mosses]; //"mosses"
+
 // --- 題目三：type（& 組合） ---
 // 說明：請用 type 定義 BasicPlant 與 StockInfo，再用 & 組合為 OnShelfPlant，建立範例變數。
 // 目標：理解 type 宣告與交叉型別的寫法。
@@ -145,8 +146,8 @@ export function updatePlant(input: Partial<PlantBase>): Required<PlantBase> {
 // --- 題目八：Record ---
 // 說明：用 Record 表示庫存表。
 // 目標：以字串鍵對應到嚴格結構。
-export type Inventory = /* TODO */ any;
-export const inventory /* TODO */ = {
+export type Inventory = Record<string, number>;
+export const inventory: Inventory = {
 	"PLANT-1001": 42,
 	"PLANT-2001": 8,
 };
@@ -157,11 +158,11 @@ export const inventory /* TODO */ = {
 // 需求：
 // 1) CartPlant：只需 id/name/price
 // 2) PublicPlant：移除重量與出貨地
-export type CartPlant = /* TODO */ any;
-export type PublicPlant = /* TODO */ any;
+export type CartPlant = Pick<PlantItem, "id" | "name" | "price">;
+export type PublicPlant = Omit<PlantItem, "weightKg" | "shipFrom">;
 
-export const cartPlant /* TODO */ = { id: 101, name: "琴葉榕", price: 2500 };
-export const publicPlant /* TODO */ = {
+export const cartPlant: CartPlant = { id: 101, name: "琴葉榕", price: 2500 };
+export const publicPlant: PublicPlant = {
 	id: 101,
 	name: "琴葉榕",
 	price: 2500,
@@ -184,15 +185,32 @@ export const publicPlant /* TODO */ = {
     - imagesUrl: 字串陣列（非必要）
 */
 
+export type Product = {
+	id: string;
+	title: string;
+	category: string;
+	description: string;
+	origin_price: string;
+	price: number;
+	is_enabled: boolean;
+	unit: string;
+	imageUrl: string;
+	imagesUrl?: string[];
+};
+
 /*
 2️⃣ 定義 type CreateProduct
 由 Product 衍生，但不包含 id（使用 Omit）
 */
 
+export type CreateProduct = Omit<Product, "id">;
+
 /*
 3️⃣ 定義 type UpdateProduct
 由 Product 衍生，id, title 必須有，其餘皆可選（使用 Partial 與 Omit）
 */
+export type UpdateProduct = Pick<Product, "id" | "title"> &
+	Partial<Omit<Product, "id" | "title">>;
 
 /*
 4️⃣ 實作函式 submitProduct(type, product)
@@ -204,3 +222,17 @@ export const publicPlant /* TODO */ = {
 create → "新增商品成功：${product.title}"
 update → "更新商品成功：${product.id}"
 */
+
+export type TsubmitProduct = (
+	type: "create" | "update",
+	product: Product
+) => string;
+
+const submitProduct: TsubmitProduct = (type, product) => {
+	switch (type) {
+		case "create":
+			return `新增商品成功：${product.title}`;
+		case "update":
+			return `更新商品成功：${product.id}`;
+	}
+};
